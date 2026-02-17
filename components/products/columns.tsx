@@ -7,7 +7,7 @@ export type ProductColumn = {
     name: string;
     price: number;
     quantity: number;
-    status: string;
+    status: "active" | "inactive" | "out_of_stock";
     createdAt: string;
     image: string;
 };
