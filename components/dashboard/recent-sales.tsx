@@ -19,7 +19,7 @@ export function RecentSales({ data }: RecentSalesProps) {
                             {sale.purchaseId}
                         </p>
                     </div>
-                    <div className="ml-auto font-medium">+OMR {sale.totalAmount.toFixed(3)}</div>
+                    <div className="ml-auto font-medium">+INR {sale.totalAmount.toFixed(3)}</div>
                 </div>
             ))}
             {data.length === 0 && <p className="text-sm text-muted-foreground">No recent sales.</p>}

@@ -26,7 +26,7 @@ export const columns: ColumnDef<SalesColumn>[] = [
     },
     {
         accessorKey: "totalAmount",
-        header: "Amount (OMR)",
+        header: "Amount (INR)",
         cell: ({ row }) => <div>{row.original.totalAmount.toFixed(3)}</div>,
     },
     {

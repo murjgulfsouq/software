@@ -47,19 +47,12 @@ export async function POST(req: Request) {
                 await product.save({ session: sessionMongo });
 
                 totalCount += item.quantity;
-                const lineTotal = item.price * item.quantity; // Use price from request (snapshot) or DB? 
-
-                const priceToUse = product.price; // Use current DB price
-                const lineTotalCalc = priceToUse * item.quantity;
-
+                const lineTotalCalc = product.price * item.quantity;
                 totalAmount += lineTotalCalc;
 
                 invoiceProducts.push({
                     productId: product._id,
-                    name: product.name,
-                    price: priceToUse,
                     quantity: item.quantity,
-                    total: lineTotalCalc,
                 });
             }
 

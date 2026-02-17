@@ -2,10 +2,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 interface IInvoiceItem {
     productId: mongoose.Types.ObjectId;
-    name: string;
-    price: number;
     quantity: number;
-    total: number;
 }
 
 export interface IInvoice extends Document {
@@ -28,10 +25,7 @@ const InvoiceSchema: Schema<IInvoice> = new Schema(
                     ref: "Product",
                     required: true,
                 },
-                name: { type: String, required: true },
-                price: { type: Number, required: true },
                 quantity: { type: Number, required: true },
-                total: { type: Number, required: true },
             },
         ],
         totalCount: { type: Number, required: true },
@@ -46,3 +40,4 @@ const InvoiceSchema: Schema<IInvoice> = new Schema(
 
 export const Invoice: Model<IInvoice> =
     mongoose.models.Invoice || mongoose.model<IInvoice>("Invoice", InvoiceSchema);
+

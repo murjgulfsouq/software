@@ -51,7 +51,7 @@ export default function DashboardClient() {
                         <DollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">OMR {stats.totalRevenue.toFixed(3)}</div>
+                        <div className="text-2xl font-bold">INR {stats.totalRevenue.toFixed(3)}</div>
                         <p className="text-xs text-muted-foreground">
                             Lifetime revenue
                         </p>
