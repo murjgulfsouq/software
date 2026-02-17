@@ -15,7 +15,8 @@ export async function GET(req: Request) {
 
         const invoices = await Invoice.find()
             .sort({ createdAt: -1 })
-            .populate("createdBy", "name");
+            .populate("createdBy", "name")
+            .populate("products.productId");
 
         return NextResponse.json(invoices);
     } catch (error) {

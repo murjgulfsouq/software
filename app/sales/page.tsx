@@ -7,7 +7,6 @@ import { SalesClient } from "@/components/sales/sales-client";
 export default async function SalesPage() {
     await connectDB();
 
-    // Fetch invoices with populated createdBy
     const invoices = await Invoice.find().sort({ createdAt: -1 }).populate("createdBy", "name");
 
     const formattedSales = invoices.map((item) => ({
@@ -15,7 +14,7 @@ export default async function SalesPage() {
         purchaseId: item.purchaseId,
         totalCount: item.totalCount,
         totalAmount: item.totalAmount,
-        createdBy: (item.createdBy as any)?.name || "Unknown",
+        createdBy: item.createdBy,
         createdAt: format(item.createdAt, "MMMM do, yyyy HH:mm"),
     }));
 

@@ -38,6 +38,11 @@ const InvoiceSchema: Schema<IInvoice> = new Schema(
     { timestamps: true }
 );
 
+// Force re-registration of the model to clear cached hooks/schema during development
+if (process.env.NODE_ENV === "development") {
+    delete mongoose.models.Invoice;
+}
+
 export const Invoice: Model<IInvoice> =
     mongoose.models.Invoice || mongoose.model<IInvoice>("Invoice", InvoiceSchema);
 

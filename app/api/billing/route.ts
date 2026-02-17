@@ -72,14 +72,25 @@ export async function POST(req: Request) {
             await sessionMongo.commitTransaction();
             sessionMongo.endSession();
 
-            return NextResponse.json(invoice);
+            // Populate product details before returning and convert to plain object
+            const populatedInvoice = await Invoice.findById(invoice._id)
+                .populate("products.productId")
+                .lean();
+
+            console.log("[BILLING_POST_SUCCESS]", invoice.purchaseId);
+            return NextResponse.json(populatedInvoice);
+
         } catch (error: any) {
-            await sessionMongo.abortTransaction();
-            sessionMongo.endSession();
-            return new NextResponse(error.message, { status: 400 });
+            console.error("[BILLING_POST_ERROR]", error);
+            if (sessionMongo) {
+                await sessionMongo.abortTransaction();
+                sessionMongo.endSession();
+            }
+            return new NextResponse(error.message || "Checkout failed", { status: 400 });
         }
     } catch (error) {
-        console.error("[BILLING_POST]", error);
+        console.error("[BILLING_POST_FATAL]", error);
         return new NextResponse("Internal Error", { status: 500 });
     }
 }
+

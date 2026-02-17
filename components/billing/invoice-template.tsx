@@ -5,10 +5,11 @@ import { IInvoice } from "@/models/Invoice"; // Note: Importing interface from m
 import { format } from "date-fns";
 
 interface InvoiceItem {
-    name: string;
-    price: number;
+    productId: {
+        name: string;
+        price: number;
+    };
     quantity: number;
-    total: number;
 }
 
 interface InvoiceData {
@@ -78,6 +79,7 @@ const styles = `
 `;
 
 export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
+
     return (
         <div className="invoice-container p-4 bg-white text-black" style={{ width: "80mm" }}>
             <style>{styles}</style>
@@ -105,16 +107,22 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => 
                     </tr>
                 </thead>
                 <tbody>
-                    {invoice.products.map((item, index) => (
-                        <tr key={index}>
-                            <td className="py-1">
-                                <div>{item.name}</div>
-                                <div className="text-[10px] text-gray-500">@{item.price.toFixed(3)}</div>
-                            </td>
-                            <td className="text-center py-1">{item.quantity}</td>
-                            <td className="text-right py-1">{item.total.toFixed(3)}</td>
-                        </tr>
-                    ))}
+                    {invoice.products.map((item, index) => {
+                        const name = item.productId?.name || "Unknown Product";
+                        const price = item.productId?.price || 0;
+                        const total = price * item.quantity;
+
+                        return (
+                            <tr key={index}>
+                                <td className="py-1">
+                                    <div>{name}</div>
+                                    <div className="text-[10px] text-gray-500">@{price.toFixed(3)}</div>
+                                </td>
+                                <td className="text-center py-1">{item.quantity}</td>
+                                <td className="text-right py-1">{total.toFixed(3)}</td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
 
@@ -126,7 +134,7 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => 
             </div>
             <div className="totals flex justify-between font-bold text-base mt-1">
                 <span>Total Amount:</span>
-                <span>OMR {invoice.totalAmount.toFixed(3)}</span>
+                <span>INR {invoice.totalAmount.toFixed(3)}</span>
             </div>
 
             <div className="divider border-t border-dashed border-black my-2"></div>
@@ -138,3 +146,4 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => 
         </div>
     );
 };
+

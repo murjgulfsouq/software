@@ -114,8 +114,6 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
                 products: cart.map(item => ({
                     productId: item.id,
                     quantity: item.cartQuantity,
-                    price: item.price,
-                    name: item.name
                 }))
             };
 
@@ -140,6 +138,7 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
                 }
                 return p;
             }));
+
 
         } catch (error: any) {
             console.error("Checkout error:", error);
