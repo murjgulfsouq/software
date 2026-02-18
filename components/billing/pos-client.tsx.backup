@@ -115,67 +115,46 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
         }
     }, [lastInvoice, shouldPrint, handlePrint]);
 
-    const handlePrintSuccess = async () => {
-    if (!pendingInvoiceId) return;
-    
-    setLoading(true);
-    try {
-        // Confirm the invoice after print
-        await axios.post("/api/billing/confirm", { invoiceId: pendingInvoiceId });
-        
-        toast.success("Transaction completed successfully!");
-        
-        // Update local product stock to reflect changes
-        setProducts(prev => prev.map(p => {
-            const cartItem = savedCartForRollback.find(c => c.id === p.id);
-            if (cartItem) {
-                const newQty = p.quantity - cartItem.cartQuantity;
-                return {
-                    ...p,
-                    quantity: newQty,
-                    status: newQty === 0 ? "out_of_stock" : p.status
-                };
+    // Handle post-print confirmation
+    useEffect(() => {
+        const confirmPrint = async () => {
+            if (printAttempted && pendingInvoiceId) {
+                try {
+                    // Confirm the invoice after print
+                    await axios.post("/api/billing/confirm", { invoiceId: pendingInvoiceId });
+
+                    toast.success("Transaction completed successfully!");
+
+                    // Update local product stock to reflect changes
+                    setProducts(prev => prev.map(p => {
+                        const cartItem = cart.find(c => c.id === p.id);
+                        if (cartItem) {
+                            const newQty = p.quantity - cartItem.cartQuantity;
+                            return {
+                                ...p,
+                                quantity: newQty,
+                                status: newQty === 0 ? "out_of_stock" : p.status
+                            };
+                        }
+                        return p;
+                    }));
+
+                    // Clear cart and reset states
+                    setCart([]);
+                    setPendingInvoiceId(null);
+                    setPrintAttempted(false);
+                    setShouldPrint(false);
+
+                } catch (error) {
+                    console.error("Failed to confirm invoice:", error);
+                    toast.error("Print confirmation failed. Please contact support.");
+                    setPrintAttempted(false);
+                }
             }
-            return p;
-        }));
-        
-        // Clear cart and reset states
-        setCart([]);
-        setPendingInvoiceId(null);
-        setShowPrintConfirmation(false);
-        setSavedCartForRollback([]);
-        
-    } catch (error) {
-        console.error("Failed to confirm invoice:", error);
-        toast.error("Print confirmation failed. Please contact support.");
-    } finally {
-        setLoading(false);
-    }
-};
+        };
 
-const handlePrintCancelled = async () => {
-    if (!pendingInvoiceId) return;
-    
-    setLoading(true);
-    try {
-        // Cancel the pending invoice
-        await axios.post("/api/billing/cancel", { invoiceId: pendingInvoiceId });
-        
-        toast.info("Transaction cancelled. No stock was deducted.");
-        
-        // Reset states but keep the cart
-        setPendingInvoiceId(null);
-        setShowPrintConfirmation(false);
-        setSavedCartForRollback([]);
-        
-    } catch (error) {
-        console.error("Failed to cancel invoice:", error);
-        toast.error("Cancellation failed. Please contact support.");
-    } finally {
-        setLoading(false);
-    }
-};
-
+        confirmPrint();
+    }, [printAttempted, pendingInvoiceId, cart]);
 
     const handleCheckout = async () => {
         if (cart.length === 0) return;

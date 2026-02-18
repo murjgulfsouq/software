@@ -7,9 +7,18 @@ interface IInvoiceItem {
 
 export interface IInvoice extends Document {
     purchaseId: string;
+    invoiceNumber: string; // Human-readable sequential number (e.g., INV-2026-00001)
     products: IInvoiceItem[];
     totalCount: number;
-    totalAmount: number;
+    subtotal: number; // Amount before tax
+    taxRate: number; // Tax percentage (e.g., 5 for 5%)
+    taxAmount: number; // Calculated tax amount
+    totalAmount: number; // subtotal + taxAmount
+    cashierName: string; // Staff member who processed the sale
+    cashierId: string; // Reference to user ID
+    paymentMethod: string; // Payment type (Cash, Card, etc.)
+    status: string; // Invoice status: pending, completed, cancelled
+    notes?: string; // Optional notes
     createdBy: string;
     createdAt: Date;
     updatedAt: Date;
@@ -18,6 +27,7 @@ export interface IInvoice extends Document {
 const InvoiceSchema: Schema<IInvoice> = new Schema(
     {
         purchaseId: { type: String, required: true, unique: true },
+        invoiceNumber: { type: String, required: true, unique: true },
         products: [
             {
                 productId: {
@@ -29,7 +39,15 @@ const InvoiceSchema: Schema<IInvoice> = new Schema(
             },
         ],
         totalCount: { type: Number, required: true },
+        subtotal: { type: Number, required: true },
+        taxRate: { type: Number, required: true, default: 5 },
+        taxAmount: { type: Number, required: true },
         totalAmount: { type: Number, required: true },
+        cashierName: { type: String, required: true },
+        cashierId: { type: String, required: true },
+        paymentMethod: { type: String, required: true, default: "Cash" },
+        status: { type: String, required: true, default: "pending", enum: ["pending", "completed", "cancelled"] },
+        notes: { type: String },
         createdBy: {
             type: String,
             required: true,

@@ -5,8 +5,6 @@ import { POSClient } from "@/components/billing/pos-client";
 
 export default async function BillingPage() {
     await connectDB();
-    // Fetch active products only for POS? Or all to confirm stock?
-    // Usually POS shows active products.
     const products = await Product.find({ status: { $ne: "inactive" } }).sort({ name: 1 });
 
     const formattedProducts = products.map((item) => ({
@@ -17,6 +15,8 @@ export default async function BillingPage() {
         image: item.image,
         status: item.status,
     }));
+
+    console.log("formattedProducts", formattedProducts);
 
     return (
         <DashboardLayout>
