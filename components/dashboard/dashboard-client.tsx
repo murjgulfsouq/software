@@ -29,7 +29,7 @@ export default function DashboardClient() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-full">
+            <div className="flex h-[calc(100vh-8rem)] w-full items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin" />
             </div>
         );

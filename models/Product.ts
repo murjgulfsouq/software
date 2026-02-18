@@ -5,7 +5,7 @@ export interface IProduct extends Document {
     price: number;
     quantity: number;
     image: string;
-    status: "active" | "inactive" | "out_of_stock";
+    status: "active" | "inactive" | "out of stock";
     createdAt: Date;
     updatedAt: Date;
 }
@@ -18,7 +18,7 @@ const ProductSchema: Schema<IProduct> = new Schema(
         image: { type: String },
         status: {
             type: String,
-            enum: ["active", "inactive", "out_of_stock"],
+            enum: ["active", "inactive", "out of stock"],
             default: "active",
         },
     },
@@ -27,8 +27,8 @@ const ProductSchema: Schema<IProduct> = new Schema(
 
 ProductSchema.pre("save", async function () {
     if (this.quantity === 0) {
-        this.status = "out_of_stock";
-    } else if (this.status === "out_of_stock" && this.quantity > 0) {
+        this.status = "out of stock";
+    } else if (this.status === "out of stock" && this.quantity > 0) {
         this.status = "active";
     }
 });

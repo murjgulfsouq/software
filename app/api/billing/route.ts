@@ -43,7 +43,7 @@ export async function POST(req: Request) {
 
                 product.quantity -= item.quantity;
                 if (product.quantity === 0) {
-                    product.status = "out_of_stock";
+                    product.status = "out of stock";
                 }
                 await product.save({ session: sessionMongo });
 
@@ -90,7 +90,7 @@ export async function POST(req: Request) {
                 cashierName: user.name || user.email || "Staff",
                 cashierId: user.id,
                 paymentMethod: "Cash", // Default to Cash, can be enhanced later
-                createdBy: user.role === "admin" ? "static_admin_id" : user.id,
+                createdBy: user.role === "admin" ? "static_admin_id" : "static_cashier_id",
             });
 
             await invoice.save({ session: sessionMongo });

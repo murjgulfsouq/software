@@ -19,6 +19,12 @@ export const columns: ColumnDef<SalesColumn>[] = [
     {
         accessorKey: "createdBy",
         header: "Sold By",
+        cell: ({ row }) => {
+            const value = row.original.createdBy;
+            if (value === "static_admin_id") return <div>Owner</div>;
+            if (value === "static_cashier_id") return <div>Staff</div>;
+            return <div>{value}</div>;
+        },
     },
     {
         accessorKey: "totalCount",

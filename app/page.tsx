@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import DashboardClient from "@/components/dashboard/dashboard-client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,8 +28,10 @@ export default function Home() {
     const role = localStorage.getItem("user_role");
     setUserRole(role);
 
-    // Redirect staff users to billing
-    if (role === "staff") {
+    // Redirect based on role
+    if (role === "admin") {
+      router.push("/dashboard");
+    } else if (role === "staff") {
       router.push("/billing");
     }
   }, [mounted, router]);
@@ -54,6 +55,7 @@ export default function Home() {
     }
   };
 
+  console.log(userRole)
   if (!mounted) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -62,9 +64,6 @@ export default function Home() {
     );
   }
 
-  if (userRole === "admin") {
-    return <DashboardClient />;
-  }
 
   if (userRole === "staff") {
     return (

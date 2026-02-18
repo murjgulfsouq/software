@@ -25,7 +25,7 @@ export async function POST(req: Request) {
             price,
             quantity,
             image,
-            status: quantity === 0 ? "out_of_stock" : status || "active",
+            status: quantity === 0 ? "out of stock" : status || "active",
         });
 
         return NextResponse.json(product);

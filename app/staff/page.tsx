@@ -1,8 +1,13 @@
 import connectDB from "@/lib/db";
 import DashboardLayout from "../dashboard/layout";
+import { getSessionUser } from "@/lib/auth-helper";
 
 export default async function StaffPage() {
     await connectDB();
+
+    const user = await getSessionUser();
+    console.log(user)
+    
 
     return (
         <DashboardLayout>

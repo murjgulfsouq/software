@@ -1,7 +1,7 @@
 "use client";
 
 import * as z from "zod";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -26,8 +26,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { CldUploadButton } from "next-cloudinary";
-import { ImagePlus, Trash } from "lucide-react";
+import { ImagePlus, Trash, Loader2 } from "lucide-react";
 import Image from "next/image";
 
 const formSchema = z.object({
@@ -35,7 +34,7 @@ const formSchema = z.object({
     price: z.coerce.number().min(0),
     quantity: z.coerce.number().min(0),
     image: z.string().optional(),
-    status: z.enum(["active", "inactive", "out_of_stock"]),
+    status: z.enum(["active", "inactive", "out of stock"]),
 });
 
 type ProductFormValues = z.infer<typeof formSchema>;
@@ -53,13 +52,15 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 }) => {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [imageUploading, setImageUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const title = initialData ? "Edit product" : "Create product";
     const description = initialData ? "Edit a product." : "Add a new product";
     const action = initialData ? "Save changes" : "Create";
 
     const form = useForm<ProductFormValues>({
-        resolver: zodResolver(formSchema) as any, // Cast to any to avoid strict type issues with coerce
+        resolver: zodResolver(formSchema) as any,
         defaultValues: initialData || {
             name: "",
             price: 0,
@@ -69,7 +70,6 @@ export const ProductModal: React.FC<ProductModalProps> = ({
         },
     });
 
-    // Reset form when initialData changes (e.g., switching between edit and create)
     useEffect(() => {
         if (isOpen) {
             form.reset(initialData || {
@@ -81,6 +81,36 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             });
         }
     }, [initialData, form, isOpen]);
+
+    const handleImageUpload = async (file: File, onChange: (url: string) => void) => {
+        if (!file) return;
+
+        setImageUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const response = await fetch("/api/upload", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Upload error:", errorText);
+                throw new Error(errorText || "Upload failed");
+            }
+
+            const data = await response.json();
+            onChange(data.secure_url);
+            toast.success("Image uploaded successfully!");
+        } catch (error) {
+            console.error("Image upload error:", error);
+            toast.error("Failed to upload image. Please try again.");
+        } finally {
+            setImageUploading(false);
+        }
+    };
 
     const onSubmit = async (data: ProductFormValues) => {
         try {
@@ -119,10 +149,32 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                                     <FormLabel>Image (Optional)</FormLabel>
                                     <FormControl>
                                         <div className="flex items-center gap-4">
+                                            {/* Hidden native file input */}
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                ref={fileInputRef}
+                                                className="hidden"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        handleImageUpload(file, field.onChange);
+                                                    }
+                                                    // Reset input so same file can be re-selected
+                                                    e.target.value = "";
+                                                }}
+                                            />
+
                                             {field.value ? (
                                                 <div className="relative w-[100px] h-[100px] rounded-md overflow-hidden border">
                                                     <div className="z-10 absolute top-1 right-1">
-                                                        <Button type="button" onClick={() => field.onChange("")} variant="destructive" size="icon" className="h-6 w-6">
+                                                        <Button
+                                                            type="button"
+                                                            onClick={() => field.onChange("")}
+                                                            variant="destructive"
+                                                            size="icon"
+                                                            className="h-6 w-6"
+                                                        >
                                                             <Trash className="h-3 w-3" />
                                                         </Button>
                                                     </div>
@@ -131,21 +183,40 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                                                         className="object-cover"
                                                         alt="Image"
                                                         src={field.value}
+                                                        sizes="100px"
                                                     />
                                                 </div>
                                             ) : (
-                                                <CldUploadButton
-                                                    options={{ maxFiles: 1 }}
-                                                    onSuccess={(result: any) => {
-                                                        field.onChange(result.info.secure_url);
-                                                    }}
-                                                    uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+                                                <button
+                                                    type="button"
+                                                    disabled={imageUploading}
+                                                    onClick={() => fileInputRef.current?.click()}
+                                                    className="flex flex-col items-center justify-center w-[100px] h-[100px] border-2 border-dashed rounded-md cursor-pointer hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
-                                                    <div className="flex flex-col items-center justify-center w-[100px] h-[100px] border-2 border-dashed rounded-md cursor-pointer hover:bg-gray-100">
-                                                        <ImagePlus className="h-4 w-4 text-gray-500" />
-                                                        <span className="text-xs text-gray-500">Upload</span>
-                                                    </div>
-                                                </CldUploadButton>
+                                                    {imageUploading ? (
+                                                        <>
+                                                            <Loader2 className="h-4 w-4 text-gray-500 mb-1 animate-spin" />
+                                                            <span className="text-xs text-gray-500">Uploading...</span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <ImagePlus className="h-4 w-4 text-gray-500 mb-1" />
+                                                            <span className="text-xs text-gray-500">Upload</span>
+                                                        </>
+                                                    )}
+                                                </button>
+                                            )}
+
+                                            {/* Change image button when image is set */}
+                                            {field.value && (
+                                                <button
+                                                    type="button"
+                                                    disabled={imageUploading}
+                                                    onClick={() => fileInputRef.current?.click()}
+                                                    className="text-xs text-blue-500 hover:underline disabled:opacity-50"
+                                                >
+                                                    {imageUploading ? "Uploading..." : "Change"}
+                                                </button>
                                             )}
                                         </div>
                                     </FormControl>
@@ -224,7 +295,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                                         <SelectContent>
                                             <SelectItem value="active">Active</SelectItem>
                                             <SelectItem value="inactive">Inactive</SelectItem>
-                                            <SelectItem value="out_of_stock">Out of Stock</SelectItem>
+                                            <SelectItem value="out of stock">Out of Stock</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
@@ -233,11 +304,11 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                         />
                     </div>
                     <div className="pt-6 space-x-2 flex items-center justify-end w-full">
-                        <Button disabled={loading} variant="outline" onClick={onClose} type="button">
+                        <Button disabled={loading || imageUploading} variant="outline" onClick={onClose} type="button">
                             Cancel
                         </Button>
-                        <Button disabled={loading} type="submit">
-                            {action}
+                        <Button disabled={loading || imageUploading} type="submit">
+                            {loading ? "Saving..." : action}
                         </Button>
                     </div>
                 </form>

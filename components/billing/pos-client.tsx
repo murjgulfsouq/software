@@ -56,7 +56,7 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
 
     const addToCart = (product: Product) => {
         console.log(product.status)
-        if (product.quantity <= 0 || product.status === "out_of_stock") {
+        if (product.quantity <= 0 || product.status === "out of stock") {
             toast.error("Product out of stock");
             return;
         }
@@ -133,7 +133,7 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
                 return {
                     ...p,
                     quantity: newQty,
-                    status: newQty === 0 ? "out_of_stock" : p.status
+                    status: newQty === 0 ? "out of stock" : p.status
                 };
             }
             return p;
@@ -254,7 +254,7 @@ const handlePrintCancelled = async () => {
                                 <div>
                                     <h3 className="font-semibold text-sm truncate w-full" title={product.name}>{product.name}</h3>
                                     <p className="text-sm font-bold text-primary">INR {product.price.toFixed(3)}</p>
-                                    <p className="text-xs text-gray-500">{product.quantity} {product.status !== "out_of_stock" ? "in stock" : "out of stock"}</p>
+                                    <p className="text-xs text-gray-500">{product.quantity} {product.status !== "out of stock" ? "in stock" : "out of stock"}</p>
                                 </div>
                             </CardContent>
                         </Card>

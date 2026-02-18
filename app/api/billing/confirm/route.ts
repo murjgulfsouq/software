@@ -52,7 +52,7 @@ export async function POST(req: Request) {
 
                 product.quantity -= item.quantity;
                 if (product.quantity === 0) {
-                    product.status = "out_of_stock";
+                    product.status = "out of stock";
                 }
                 await product.save({ session: sessionMongo });
             }

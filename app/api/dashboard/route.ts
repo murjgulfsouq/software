@@ -17,12 +17,13 @@ export async function GET(req: Request) {
 
         // 1. Total Revenue
         const totalRevenueResult = await Invoice.aggregate([
+            { $match: { status: "completed" } },
             { $group: { _id: null, total: { $sum: "$totalAmount" } } },
         ]);
         const totalRevenue = totalRevenueResult[0]?.total || 0;
 
         // 2. Sales Count (Invoices)
-        const salesCount = await Invoice.countDocuments();
+        const salesCount = await Invoice.countDocuments({ status: "completed" });
 
         // 3. Total Products & Stock
         const productsCount = await Product.countDocuments();
@@ -37,7 +38,7 @@ export async function GET(req: Request) {
             .limit(5);
 
         // 5. Recent Sales
-        const recentSales = await Invoice.find()
+        const recentSales = await Invoice.find({ status: "completed" })
             .sort({ createdAt: -1 })
             .limit(5)
             .populate("createdBy", "name email");
@@ -52,7 +53,8 @@ export async function GET(req: Request) {
             const dayRevenue = await Invoice.aggregate([
                 {
                     $match: {
-                        createdAt: { $gte: start, $lte: end }
+                        createdAt: { $gte: start, $lte: end },
+                        status: "completed"
                     }
                 },
                 {
