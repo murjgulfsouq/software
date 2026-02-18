@@ -262,7 +262,7 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
                                 <div>
                                     <h3 className="font-semibold text-sm truncate w-full" title={product.name}>{product.name}</h3>
                                     <p className="text-sm font-bold text-primary">INR {product.price.toFixed(3)}</p>
-                                    <p className="text-xs text-gray-500">{product.quantity} {product.status !== "out of stock" ? "in stock" : "out of stock"}</p>
+                                    <p className="text-xs text-gray-500"> {product.status !== "out of stock" ? `${product.quantity} in stock` : "out of stock"}</p>
                                 </div>
                             </CardContent>
                         </Card>
