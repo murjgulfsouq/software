@@ -7,7 +7,7 @@ export async function getSessionUser() {
     if (adminToken) {
         return {
             id: "static_admin_id",
-            name: "Admin User",
+            name: "Admin",
             email: "admin@murjgulfsooq.com",
             role: "admin",
         };
@@ -17,7 +17,7 @@ export async function getSessionUser() {
     if (staffToken) {
         return {
             id: staffToken.value,
-            name: "Staff User",
+            name: "Staff",
             email: "staff@murjgulfsooq.com",
             role: "staff",
         };

@@ -7,7 +7,6 @@ export type SalesColumn = {
     purchaseId: string;
     totalCount: number;
     totalAmount: number;
-    createdBy: string;
     cashierName: string;
     createdAt: string;
 };

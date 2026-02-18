@@ -4,17 +4,18 @@ import DashboardLayout from "../dashboard/layout";
 import { format } from "date-fns";
 import { SalesClient } from "@/components/sales/sales-client";
 
+export const dynamic = "force-dynamic";
+
 export default async function SalesPage() {
     await connectDB();
 
-    const invoices = await Invoice.find().sort({ createdAt: -1 }).populate("createdBy", "name");
+    const invoices = await Invoice.find().sort({ createdAt: -1 });
 
     const formattedSales = invoices.map((item) => ({
         id: item._id.toString(),
         purchaseId: item.purchaseId,
         totalCount: item.totalCount,
         totalAmount: item.totalAmount,
-        createdBy: item.createdBy,
         cashierName: item.cashierName,
         createdAt: format(item.createdAt, "MMMM do, yyyy HH:mm"),
     }));

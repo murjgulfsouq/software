@@ -4,8 +4,7 @@ import { ProductClient } from "@/components/products/product-client";
 import { format } from "date-fns";
 import DashboardLayout from "../dashboard/layout";
 
-
-
+export const dynamic = "force-dynamic";
 
 export default async function ProductsPage() {
     await connectDB();
