@@ -36,5 +36,16 @@ export const columns: ColumnDef<SalesColumn>[] = [
     {
         accessorKey: "createdAt",
         header: "Date",
+        cell: ({ row }) => {
+            const date = new Date(row.original.createdAt);
+            return <div>{date.toLocaleString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                hour12: true,
+            })}</div>;
+        },
     },
 ];

@@ -1,7 +1,7 @@
 import connectDB from "@/lib/db";
 import { Invoice } from "@/models/Invoice";
 import DashboardLayout from "../dashboard/layout";
-import { format } from "date-fns";
+
 import { SalesClient } from "@/components/sales/sales-client";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +17,7 @@ export default async function SalesPage() {
         totalCount: item.totalCount,
         totalAmount: item.totalAmount,
         cashierName: item.cashierName,
-        createdAt: format(item.createdAt, "MMMM do, yyyy HH:mm"),
+        createdAt: item.createdAt.toISOString(),
     }));
 
     return (

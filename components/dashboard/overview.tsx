@@ -22,6 +22,7 @@ export function Overview({ data }: OverviewProps) {
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
+                    padding={{ top: 20 }}
                     tickFormatter={(value) => `INR ${value}`}
                 />
                 <Bar dataKey="total" fill="#3b82f6" radius={[4, 4, 0, 0]} />

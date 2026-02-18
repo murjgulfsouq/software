@@ -12,7 +12,7 @@ export function middleware(req: NextRequest) {
         path.startsWith("/dashboard") ||
         path.startsWith("/products") ||
         path.startsWith("/sales") ||
-        path.startsWith("/staff")
+        path.startsWith("/staff") && !path.startsWith("/staff/login")
     ) {
         // If we want strict server-side protection, we need cookies.
         // Since user removed cookie setting in staff login, we accept adminToken OR just rely on client-side if cookies are missing.

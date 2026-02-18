@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Overview } from "@/components/dashboard/overview";
 import { RecentSales } from "@/components/dashboard/recent-sales";
 import { CreditCard, Package, DollarSign, Activity, AlertTriangle } from "lucide-react";
@@ -120,6 +120,9 @@ export default function DashboardClient() {
                 <Card className="col-span-4">
                     <CardHeader>
                         <CardTitle>Overview</CardTitle>
+                        <CardDescription>
+                            You made {stats.salesCount} sales total.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="pl-2">
                         <Overview data={stats.graphData} />
