@@ -63,8 +63,8 @@ export function Sidebar({ className }: SidebarProps) {
 
     const handleLogout = async () => {
         try {
-            await fetch("/api/auth/logout", { method: "POST" });
-            localStorage.removeItem("user_role"); // Clear role from local storage
+            await fetch("/api/logout", { method: "POST" });
+            localStorage.removeItem("user_role");
             window.location.href = "/login";
         } catch (error) {
             console.error("Logout failed", error);

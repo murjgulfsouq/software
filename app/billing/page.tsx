@@ -3,6 +3,8 @@ import { Product } from "@/models/Product";
 import DashboardLayout from "../dashboard/layout";
 import { POSClient } from "@/components/billing/pos-client";
 
+export const dynamic = "force-dynamic";
+
 export default async function BillingPage() {
     await connectDB();
     const products = await Product.find({ status: { $ne: "inactive" } }).sort({ name: 1 });

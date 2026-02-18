@@ -271,7 +271,7 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
             </div>
 
             {/* Cart & Billing */}
-            <div className="md:col-span-1 flex flex-col h-full border-l pl-4">
+            <div className="md:col-span-1 flex flex-col h-full border-l pl-4 md:mb-10">
                 <Card className="flex flex-col h-full">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">

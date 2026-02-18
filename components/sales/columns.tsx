@@ -9,6 +9,7 @@ export type SalesColumn = {
     totalAmount: number;
     cashierName: string;
     createdAt: string;
+
 };
 
 export const columns: ColumnDef<SalesColumn>[] = [

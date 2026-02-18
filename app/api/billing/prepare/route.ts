@@ -8,6 +8,7 @@ export async function POST(req: Request) {
     try {
         const user = await getSessionUser();
 
+        console.log(user , "user from backend")
         if (!user) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
