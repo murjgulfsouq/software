@@ -16,8 +16,6 @@ export default async function BillingPage() {
         status: item.status,
     }));
 
-    console.log("formattedProducts", formattedProducts);
-
     return (
         <DashboardLayout>
             <div className="flex-1 space-y-4 p-8 pt-6 h-full flex flex-col">

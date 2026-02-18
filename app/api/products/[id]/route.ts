@@ -41,7 +41,6 @@ export async function PATCH(
 
         await connectDB();
 
-        // Check if quantity is 0, force status to out of stock
         let newStatus = status;
         if (quantity === 0) {
             newStatus = "out of stock";

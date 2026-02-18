@@ -15,6 +15,7 @@ export default async function SalesPage() {
         totalCount: item.totalCount,
         totalAmount: item.totalAmount,
         createdBy: item.createdBy,
+        cashierName: item.cashierName,
         createdAt: format(item.createdAt, "MMMM do, yyyy HH:mm"),
     }));
 

@@ -8,6 +8,7 @@ export type SalesColumn = {
     totalCount: number;
     totalAmount: number;
     createdBy: string;
+    cashierName: string;
     createdAt: string;
 };
 
@@ -17,13 +18,10 @@ export const columns: ColumnDef<SalesColumn>[] = [
         header: "Invoice ID",
     },
     {
-        accessorKey: "createdBy",
+        accessorKey: "cashierName",
         header: "Sold By",
         cell: ({ row }) => {
-            const value = row.original.createdBy;
-            if (value === "static_admin_id") return <div>Owner</div>;
-            if (value === "static_cashier_id") return <div>Staff</div>;
-            return <div>{value}</div>;
+            return <div>{row.original.cashierName}</div>;
         },
     },
     {

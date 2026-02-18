@@ -90,7 +90,8 @@ export async function POST(req: Request) {
                 cashierName: user.name || user.email || "Staff",
                 cashierId: user.id,
                 paymentMethod: "Cash", // Default to Cash, can be enhanced later
-                createdBy: user.role === "admin" ? "static_admin_id" : "static_cashier_id",
+                createdBy: user.role === "admin" ? "static_admin_id" : user.id,
+                status: "completed",
             });
 
             await invoice.save({ session: sessionMongo });

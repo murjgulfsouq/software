@@ -10,6 +10,14 @@ import { toast } from "sonner";
 import axios from "axios";
 import { useReactToPrint } from "react-to-print";
 import { InvoiceTemplate } from "./invoice-template";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Product {
     id: string;
@@ -116,65 +124,65 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
     }, [lastInvoice, shouldPrint, handlePrint]);
 
     const handlePrintSuccess = async () => {
-    if (!pendingInvoiceId) return;
-    
-    setLoading(true);
-    try {
-        // Confirm the invoice after print
-        await axios.post("/api/billing/confirm", { invoiceId: pendingInvoiceId });
-        
-        toast.success("Transaction completed successfully!");
-        
-        // Update local product stock to reflect changes
-        setProducts(prev => prev.map(p => {
-            const cartItem = savedCartForRollback.find(c => c.id === p.id);
-            if (cartItem) {
-                const newQty = p.quantity - cartItem.cartQuantity;
-                return {
-                    ...p,
-                    quantity: newQty,
-                    status: newQty === 0 ? "out of stock" : p.status
-                };
-            }
-            return p;
-        }));
-        
-        // Clear cart and reset states
-        setCart([]);
-        setPendingInvoiceId(null);
-        setShowPrintConfirmation(false);
-        setSavedCartForRollback([]);
-        
-    } catch (error) {
-        console.error("Failed to confirm invoice:", error);
-        toast.error("Print confirmation failed. Please contact support.");
-    } finally {
-        setLoading(false);
-    }
-};
+        if (!pendingInvoiceId) return;
 
-const handlePrintCancelled = async () => {
-    if (!pendingInvoiceId) return;
-    
-    setLoading(true);
-    try {
-        // Cancel the pending invoice
-        await axios.post("/api/billing/cancel", { invoiceId: pendingInvoiceId });
-        
-        toast.info("Transaction cancelled. No stock was deducted.");
-        
-        // Reset states but keep the cart
-        setPendingInvoiceId(null);
-        setShowPrintConfirmation(false);
-        setSavedCartForRollback([]);
-        
-    } catch (error) {
-        console.error("Failed to cancel invoice:", error);
-        toast.error("Cancellation failed. Please contact support.");
-    } finally {
-        setLoading(false);
-    }
-};
+        setLoading(true);
+        try {
+            // Confirm the invoice after print
+            await axios.post("/api/billing/confirm", { invoiceId: pendingInvoiceId });
+
+            toast.success("Transaction completed successfully!");
+
+            // Update local product stock to reflect changes
+            setProducts(prev => prev.map(p => {
+                const cartItem = savedCartForRollback.find(c => c.id === p.id);
+                if (cartItem) {
+                    const newQty = p.quantity - cartItem.cartQuantity;
+                    return {
+                        ...p,
+                        quantity: newQty,
+                        status: newQty === 0 ? "out of stock" : p.status
+                    };
+                }
+                return p;
+            }));
+
+            // Clear cart and reset states
+            setCart([]);
+            setPendingInvoiceId(null);
+            setShowPrintConfirmation(false);
+            setSavedCartForRollback([]);
+
+        } catch (error) {
+            console.error("Failed to confirm invoice:", error);
+            toast.error("Print confirmation failed. Please contact support.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handlePrintCancelled = async () => {
+        if (!pendingInvoiceId) return;
+
+        setLoading(true);
+        try {
+            // Cancel the pending invoice
+            await axios.post("/api/billing/cancel", { invoiceId: pendingInvoiceId });
+
+            toast.info("Transaction cancelled. No stock was deducted.");
+
+            // Reset states but keep the cart
+            setPendingInvoiceId(null);
+            setShowPrintConfirmation(false);
+            setSavedCartForRollback([]);
+
+        } catch (error) {
+            console.error("Failed to cancel invoice:", error);
+            toast.error("Cancellation failed. Please contact support.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
 
     const handleCheckout = async () => {
@@ -346,6 +354,33 @@ const handlePrintCancelled = async () => {
                     ) : null}
                 </div>
             </div>
+
+            {/* Print Confirmation Dialog */}
+            <Dialog open={showPrintConfirmation} onOpenChange={setShowPrintConfirmation}>
+                <DialogContent showCloseButton={false}>
+                    <DialogHeader>
+                        <DialogTitle>Confirm Print Success</DialogTitle>
+                        <DialogDescription>
+                            Did the invoice print successfully? Confirming will finalize the transaction and update stock.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={handlePrintCancelled}
+                            disabled={loading}
+                        >
+                            No, Cancel Transaction
+                        </Button>
+                        <Button
+                            onClick={handlePrintSuccess}
+                            disabled={loading}
+                        >
+                            {loading ? "Confirming..." : "Yes, Transaction Successful"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
