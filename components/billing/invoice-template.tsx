@@ -16,9 +16,6 @@ interface InvoiceData {
     createdAt: string;
     products: InvoiceItem[];
     totalCount: number;
-    subtotal: number;
-    taxRate: number;
-    taxAmount: number;
     totalAmount: number;
     cashierName: string;
     paymentMethod: string;
@@ -29,7 +26,6 @@ interface InvoiceTemplateProps {
 }
 
 export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => {
-    // Ensure we handle the date string correctly for the formatter
     const dateObj = invoice.createdAt ? new Date(invoice.createdAt) : new Date();
     const invoiceDate = format(dateObj, "dd/MM/yyyy");
     const invoiceTime = format(dateObj, "HH:mm:ss");
@@ -155,10 +151,9 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => 
 
             <div className="receipt">
                 <div className="receipt-header">
-                    <h1>MURJ GULF SOUQ</h1>
-                    <p>Muscat, Sultanate of Oman</p>
-                    <p>Tel: +968 1234 5678</p>
-                    <p>TRN: 123456789</p>
+                    <h1>MARJ GULF SOUQ</h1>
+                    <p>Kavanur</p>
+                    <p>Tel: +91 79-02259260</p>
                 </div>
 
                 <div className="receipt-divider"></div>
@@ -202,14 +197,6 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => 
                     <div className="receipt-total-row">
                         <span>Items:</span>
                         <span>{invoice.totalCount}</span>
-                    </div>
-                    <div className="receipt-total-row">
-                        <span>Subtotal:</span>
-                        <span>INR {invoice.subtotal.toFixed(3)}</span>
-                    </div>
-                    <div className="receipt-total-row">
-                        <span>VAT ({invoice.taxRate}%):</span>
-                        <span>INR {invoice.taxAmount.toFixed(3)}</span>
                     </div>
                     <div className="receipt-grand-total">
                         <span>TOTAL:</span>

@@ -40,8 +40,6 @@ const InvoiceSchema: Schema<IInvoice> = new Schema(
         ],
         totalCount: { type: Number, required: true },
         subtotal: { type: Number, required: true },
-        taxRate: { type: Number, required: true, default: 5 },
-        taxAmount: { type: Number, required: true },
         totalAmount: { type: Number, required: true },
         cashierName: { type: String, required: true },
         cashierId: { type: String, required: true },
@@ -56,7 +54,6 @@ const InvoiceSchema: Schema<IInvoice> = new Schema(
     { timestamps: true }
 );
 
-// Force re-registration of the model to clear cached hooks/schema during development
 if (process.env.NODE_ENV === "development") {
     delete mongoose.models.Invoice;
 }

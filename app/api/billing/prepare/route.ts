@@ -7,8 +7,6 @@ import connectDB from "@/lib/db";
 export async function POST(req: Request) {
     try {
         const user = await getSessionUser();
-
-        console.log(user , "user from backend")
         if (!user) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
@@ -27,7 +25,6 @@ export async function POST(req: Request) {
             let subtotal = 0;
             const invoiceProducts = [];
 
-            // Validate stock availability without deducting
             for (const item of products) {
                 const product = await Product.findById(item.productId);
 
@@ -49,10 +46,7 @@ export async function POST(req: Request) {
                 });
             }
 
-            // Tax calculation (5% VAT - configurable)
-            const TAX_RATE = 5; // 5% VAT
-            const taxAmount = (subtotal * TAX_RATE) / 100;
-            const totalAmount = subtotal + taxAmount;
+            const totalAmount = subtotal;
 
             // Generate sequential invoice number
             const year = new Date().getFullYear();
@@ -68,26 +62,22 @@ export async function POST(req: Request) {
             const invoiceNumber = `INV-${year}-${String(sequenceNumber).padStart(5, '0')}`;
             const purchaseId = `PUR-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-            // Create invoice in PENDING state (stock not yet deducted)
             const invoice = new Invoice({
                 purchaseId,
                 invoiceNumber,
                 products: invoiceProducts,
                 totalCount,
                 subtotal,
-                taxRate: TAX_RATE,
-                taxAmount,
                 totalAmount,
                 cashierName: user.name || user.email || "Staff",
                 cashierId: user.id,
                 paymentMethod: "Cash",
                 createdBy: user.role === "admin" ? "static_admin_id" : user.id,
-                status: "pending", // Mark as pending until print is confirmed
+                status: "pending",
             });
 
             await invoice.save();
 
-            // Populate product details before returning
             const populatedInvoice = await Invoice.findById(invoice._id)
                 .populate("products.productId")
                 .lean();

@@ -18,6 +18,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import Image from "next/image";
 
 interface Product {
     id: string;
@@ -51,13 +52,10 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
     const handlePrint = useReactToPrint({
         contentRef: componentRef,
         onAfterPrint: () => {
-            console.log("Print dialog closed");
-            // Show confirmation dialog to user
             setShowPrintConfirmation(true);
         },
     });
 
-    // Filter products
     const filteredProducts = products.filter((p) =>
         p.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -96,7 +94,6 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
             return;
         }
 
-        // Find product actual stock
         const product = products.find(p => p.id === productId);
         if (!product) return;
 
@@ -117,7 +114,6 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
 
     useEffect(() => {
         if (lastInvoice && shouldPrint) {
-            // Trigger print dialog
             handlePrint();
             setShouldPrint(false);
         }
@@ -133,7 +129,6 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
 
             toast.success("Transaction completed successfully!");
 
-            // Update local product stock to reflect changes
             setProducts(prev => prev.map(p => {
                 const cartItem = savedCartForRollback.find(c => c.id === p.id);
                 if (cartItem) {
@@ -166,12 +161,10 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
 
         setLoading(true);
         try {
-            // Cancel the pending invoice
             await axios.post("/api/billing/cancel", { invoiceId: pendingInvoiceId });
 
             toast.info("Transaction cancelled. No stock was deducted.");
 
-            // Reset states but keep the cart
             setPendingInvoiceId(null);
             setShowPrintConfirmation(false);
             setSavedCartForRollback([]);
@@ -197,11 +190,9 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
                 }))
             };
 
-            // Create invoice in "pending" state (stock not yet deducted)
             const response = await axios.post("/api/billing/prepare", payload);
             const invoice = response.data;
 
-            // Save cart for potential rollback
             setSavedCartForRollback([...cart]);
 
             setLastInvoice(invoice);
@@ -221,7 +212,6 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
         }
     };
 
-    console.log("lastInvoice", lastInvoice);
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
@@ -248,7 +238,9 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
                                 <div className="w-full aspect-square relative bg-gray-100 rounded-md overflow-hidden">
                                     {/* Image placeholder or actual image */}
                                     {product.image ? (
-                                        <img
+                                        <Image
+                                            width={50}
+                                            height={50}
                                             src={product.image}
                                             alt={product.name}
                                             className="object-cover w-full h-full"

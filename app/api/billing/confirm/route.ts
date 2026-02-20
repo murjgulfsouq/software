@@ -25,7 +25,6 @@ export async function POST(req: Request) {
         sessionMongo.startTransaction();
 
         try {
-            // Find the pending invoice
             const invoice = await Invoice.findById(invoiceId)
                 .populate("products.productId")
                 .session(sessionMongo);
@@ -38,7 +37,6 @@ export async function POST(req: Request) {
                 throw new Error("Invoice already processed");
             }
 
-            // Now deduct stock for each product
             for (const item of invoice.products) {
                 const product = await Product.findById(item.productId._id).session(sessionMongo);
 
@@ -57,7 +55,6 @@ export async function POST(req: Request) {
                 await product.save({ session: sessionMongo });
             }
 
-            // Update invoice status to completed
             invoice.status = "completed";
             await invoice.save({ session: sessionMongo });
 
