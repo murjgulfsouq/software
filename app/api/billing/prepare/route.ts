@@ -37,7 +37,8 @@ export async function POST(req: Request) {
                 }
 
                 totalCount += item.quantity;
-                const lineTotal = product.price * item.quantity;
+                const effectivePrice = product.offerPrice != null ? product.offerPrice : product.price;
+                const lineTotal = effectivePrice * item.quantity;
                 subtotal += lineTotal;
 
                 invoiceProducts.push({

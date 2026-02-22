@@ -12,7 +12,7 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        const { name, price, quantity, image, status } = body;
+        const { name, price, quantity, image, status, offerAmount, offerType } = body;
 
         if (!name || !price || quantity === undefined) {
             return new NextResponse("Missing required fields", { status: 400 });
@@ -20,12 +20,25 @@ export async function POST(req: Request) {
 
         await connectDB();
 
+        // Compute offerPrice if an offer was provided
+        let offerPrice: number | undefined;
+        if (offerAmount !== undefined && offerAmount !== null && Number(offerAmount) > 0) {
+            const type = offerType === "fixed" ? "fixed" : "percent";
+            if (type === "fixed") {
+                offerPrice = Math.max(0, Number(price) - Number(offerAmount));
+            } else {
+                const pct = Number(offerAmount);
+                offerPrice = Math.max(0, Number(price) * (1 - pct / 100));
+            }
+        }
+
         const product = await Product.create({
             name,
             price,
             quantity,
             image,
             status: quantity === 0 ? "out of stock" : status || "active",
+            ...(offerPrice !== undefined && { offerPrice }),
         });
 
         return NextResponse.json(product);

@@ -24,6 +24,7 @@ interface Product {
     id: string;
     name: string;
     price: number;
+    offerPrice?: number;
     quantity: number;
     image: string;
     status: string;
@@ -109,7 +110,10 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
         );
     };
 
-    const subtotal = cart.reduce((acc, item) => acc + item.price * item.cartQuantity, 0);
+    const subtotal = cart.reduce((acc, item) => {
+        const effectivePrice = item.offerPrice ?? item.price;
+        return acc + effectivePrice * item.cartQuantity;
+    }, 0);
 
 
     useEffect(() => {
@@ -253,7 +257,14 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
                                 </div>
                                 <div>
                                     <h3 className="font-semibold text-sm truncate w-full" title={product.name}>{product.name}</h3>
-                                    <p className="text-sm font-bold text-primary">INR {product.price.toFixed(3)}</p>
+                                    {product.offerPrice != null ? (
+                                        <div className="flex flex-col items-center">
+                                            <p className="text-sm font-bold text-green-600">INR {product.offerPrice.toFixed(3)}</p>
+                                            <p className="text-xs line-through text-gray-400">INR {product.price.toFixed(3)}</p>
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm font-bold text-primary">INR {product.price.toFixed(3)}</p>
+                                    )}
                                     <p className="text-xs text-gray-500"> {product.status !== "out of stock" ? `${product.quantity} in stock` : "out of stock"}</p>
                                 </div>
                             </CardContent>
@@ -283,9 +294,9 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
                                         <div className="flex-1 min-w-0">
                                             <h4 className="font-semibold text-sm truncate" title={item.name}>{item.name}</h4>
                                             <div className="text-xs text-gray-500">
-                                                INR {(item.price * item.cartQuantity).toFixed(3)}
+                                                INR {((item.offerPrice ?? item.price) * item.cartQuantity).toFixed(3)}
                                                 <span className="ml-1 text-[10px] text-gray-400">
-                                                    (INR {item.price.toFixed(3)} ea)
+                                                    (INR {(item.offerPrice ?? item.price).toFixed(3)} ea{item.offerPrice != null ? " - offer" : ""})
                                                 </span>
                                             </div>
                                         </div>

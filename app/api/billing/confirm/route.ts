@@ -65,7 +65,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: true, invoice });
 
         } catch (error: any) {
-            console.error("[BILLING_CONFIRM_ERROR]", error);
+            console.error("[BILLING_CONFIRM_ERROR]", error);    
             if (sessionMongo) {
                 await sessionMongo.abortTransaction();
                 sessionMongo.endSession();

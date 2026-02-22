@@ -3,6 +3,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface IProduct extends Document {
     name: string;
     price: number;
+    offerPrice?: number;
     quantity: number;
     image: string;
     status: "active" | "inactive" | "out of stock";
@@ -14,6 +15,7 @@ const ProductSchema: Schema<IProduct> = new Schema(
     {
         name: { type: String, required: true },
         price: { type: Number, required: true },
+        offerPrice: { type: Number },
         quantity: { type: Number, required: true, min: 0 },
         image: { type: String },
         status: {

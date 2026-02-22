@@ -13,6 +13,7 @@ export default async function BillingPage() {
         id: item._id.toString(),
         name: item.name,
         price: item.price,
+        offerPrice: item.offerPrice,
         quantity: item.quantity,
         image: item.image,
         status: item.status,
