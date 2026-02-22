@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function BillingPage() {
     await connectDB();
-    const products = await Product.find({ status: { $ne: "inactive" } }).sort({ name: 1 });
+    const products = await Product.find({ status: { $ne: "inactive" } }).sort({ name: 1 }).lean();
 
     const formattedProducts = products.map((item) => ({
         id: item._id.toString(),

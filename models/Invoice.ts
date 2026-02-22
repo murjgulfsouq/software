@@ -10,10 +10,11 @@ export interface IInvoice extends Document {
     invoiceNumber: string; // Human-readable sequential number (e.g., INV-2026-00001)
     products: IInvoiceItem[];
     totalCount: number;
-    subtotal: number; // Amount before tax
+    subtotal: number; // Cart total at offer/regular prices (before any bill discount)
+    discountTotal: number; // Combined savings: offer-price discounts + cashier bill discount
     taxRate: number; // Tax percentage (e.g., 5 for 5%)
     taxAmount: number; // Calculated tax amount
-    totalAmount: number; // subtotal + taxAmount
+    totalAmount: number; // Final amount customer pays
     cashierName: string; // Staff member who processed the sale
     cashierId: string; // Reference to user ID
     paymentMethod: string; // Payment type (Cash, Card, etc.)
@@ -40,6 +41,7 @@ const InvoiceSchema: Schema<IInvoice> = new Schema(
         ],
         totalCount: { type: Number, required: true },
         subtotal: { type: Number, required: true },
+        discountTotal: { type: Number, default: 0 },
         totalAmount: { type: Number, required: true },
         cashierName: { type: String, required: true },
         cashierId: { type: String, required: true },

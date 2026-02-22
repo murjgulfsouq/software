@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export default async function ProductsPage() {
     await connectDB();
-    const products = await Product.find().sort({ createdAt: -1 });
+    const products = await Product.find().sort({ createdAt: -1 }).lean();
 
     const formattedProducts = products.map((item) => ({
         id: item._id.toString(),

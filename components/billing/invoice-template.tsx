@@ -6,6 +6,7 @@ interface InvoiceItem {
     productId: {
         name: string;
         price: number;
+        offerPrice?: number;
     };
     quantity: number;
 }
@@ -16,7 +17,9 @@ interface InvoiceData {
     createdAt: string;
     products: InvoiceItem[];
     totalCount: number;
-    totalAmount: number;
+    subtotal: number;      // cart total at effective prices
+    discountTotal: number; // combined savings (offer prices + bill discount)
+    totalAmount: number;   // final amount paid
     cashierName: string;
     paymentMethod: string;
 }
@@ -29,6 +32,9 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => 
     const dateObj = invoice.createdAt ? new Date(invoice.createdAt) : new Date();
     const invoiceDate = format(dateObj, "dd/MM/yyyy");
     const invoiceTime = format(dateObj, "HH:mm:ss");
+
+    const hasDiscount = (invoice.discountTotal ?? 0) > 0;
+    const mrpTotal = (invoice.subtotal ?? 0) + (invoice.discountTotal ?? 0);
 
     return (
         <>
@@ -50,12 +56,11 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => 
                     width: 80mm;
                     padding: 4mm;
                     font-family: 'Courier New', Courier, monospace;
-                    /* Increased base font size for thermal readability */
                     font-size: 13px; 
                     line-height: 1.2;
                     color: #000;
                     background: #fff;
-                    text-transform: uppercase; /* Thermal receipts often look better in all caps */
+                    text-transform: uppercase;
                 }
                 
                 .receipt-header {
@@ -66,7 +71,7 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => 
                 .receipt-header h1 {
                     margin: 0;
                     font-size: 22px;
-                    font-weight: 900; /* Extra bold for the header */
+                    font-weight: 900;
                 }
                 
                 .receipt-header p {
@@ -83,11 +88,11 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => 
                     display: flex;
                     justify-content: space-between;
                     margin: 2px 0;
-                    font-weight: bold; /* Make labels bold to ensure they print */
+                    font-weight: bold;
                 }
                 
                 .receipt-divider {
-                    border-top: 2px dashed #000; /* Thicker dashes */
+                    border-top: 2px dashed #000;
                     margin: 8px 0;
                 }
                 
@@ -102,6 +107,11 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => 
                 .receipt-item-name {
                     font-weight: 900;
                     font-size: 14px;
+                }
+
+                .receipt-item-offer {
+                    font-size: 11px;
+                    font-weight: bold;
                 }
                 
                 .receipt-item-details {
@@ -120,13 +130,20 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => 
                     margin: 2px 0;
                     font-weight: bold;
                 }
+
+                .receipt-discount-row {
+                    display: flex;
+                    justify-content: space-between;
+                    margin: 2px 0;
+                    font-weight: bold;
+                }
                 
                 .receipt-grand-total {
                     display: flex;
                     justify-content: space-between;
                     margin-top: 5px;
                     padding-top: 5px;
-                    border-top: 3px solid #000; /* Heavy line for total */
+                    border-top: 3px solid #000;
                     font-size: 18px;
                     font-weight: 900;
                 }
@@ -180,15 +197,25 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => 
                 <div className="receipt-divider"></div>
 
                 <div className="receipt-items">
-                    {invoice.products.map((item, index) => (
-                        <div key={index} className="receipt-item">
-                            <div className="receipt-item-name">{item.productId?.name}</div>
-                            <div className="receipt-item-details">
-                                <span>{item.quantity} x INR {item.productId?.price.toFixed(3)}</span>
-                                <span>INR {(item.quantity * item.productId?.price).toFixed(3)}</span>
+                    {invoice.products.map((item, index) => {
+                        const hasOffer = item.productId?.offerPrice != null;
+                        const unitPrice = hasOffer ? item.productId.offerPrice! : item.productId?.price;
+                        const lineTotal = unitPrice * item.quantity;
+                        return (
+                            <div key={index} className="receipt-item">
+                                <div className="receipt-item-name">{item.productId?.name}</div>
+                                {hasOffer && (
+                                    <div className="receipt-item-offer">
+                                        MRP: INR {item.productId.price.toFixed(3)} | OFFER APPLIED
+                                    </div>
+                                )}
+                                <div className="receipt-item-details">
+                                    <span>{item.quantity} x INR {unitPrice.toFixed(3)}</span>
+                                    <span>INR {lineTotal.toFixed(3)}</span>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
                 <div className="receipt-divider"></div>
@@ -198,6 +225,21 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => 
                         <span>Items:</span>
                         <span>{invoice.totalCount}</span>
                     </div>
+
+                    {/* MRP total + combined discount row */}
+                    {hasDiscount && (
+                        <div className="receipt-total-row">
+                            <span>MRP Total:</span>
+                            <span>INR {mrpTotal.toFixed(3)}</span>
+                        </div>
+                    )}
+                    {hasDiscount && (
+                        <div className="receipt-discount-row">
+                            <span>Discount:</span>
+                            <span>-INR {(invoice.discountTotal ?? 0).toFixed(3)}</span>
+                        </div>
+                    )}
+
                     <div className="receipt-grand-total">
                         <span>TOTAL:</span>
                         <span>INR {invoice.totalAmount.toFixed(3)}</span>

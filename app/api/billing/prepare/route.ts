@@ -12,7 +12,7 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        const { products } = body;
+        const { products, billDiscount: rawBillDiscount } = body;
 
         if (!products || products.length === 0) {
             return new NextResponse("No products in cart", { status: 400 });
@@ -23,6 +23,7 @@ export async function POST(req: Request) {
         try {
             let totalCount = 0;
             let subtotal = 0;
+            let discountTotal = 0;
             const invoiceProducts = [];
 
             for (const item of products) {
@@ -39,7 +40,9 @@ export async function POST(req: Request) {
                 totalCount += item.quantity;
                 const effectivePrice = product.offerPrice != null ? product.offerPrice : product.price;
                 const lineTotal = effectivePrice * item.quantity;
+                const lineMrp = product.price * item.quantity;
                 subtotal += lineTotal;
+                discountTotal += lineMrp - lineTotal;
 
                 invoiceProducts.push({
                     productId: product._id,
@@ -47,7 +50,13 @@ export async function POST(req: Request) {
                 });
             }
 
-            const totalAmount = subtotal;
+            // Apply bill-level fixed discount (cashier-entered), merge into discountTotal
+            const billDiscountRaw = typeof rawBillDiscount === "number" && rawBillDiscount > 0
+                ? rawBillDiscount
+                : 0;
+            const billDiscountAmount = Math.min(billDiscountRaw, subtotal); // cap at subtotal
+            discountTotal += billDiscountAmount; // combined: offer savings + bill discount
+            const totalAmount = subtotal - billDiscountAmount;
 
             // Generate sequential invoice number
             const year = new Date().getFullYear();
@@ -69,6 +78,7 @@ export async function POST(req: Request) {
                 products: invoiceProducts,
                 totalCount,
                 subtotal,
+                discountTotal,
                 totalAmount,
                 cashierName: user.name || user.email || "Staff",
                 cashierId: user.id,
