@@ -248,7 +248,7 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
                     />
                 </div>
 
-                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 overflow-y-auto overflow-x-hidden pr-2" style={{ maxHeight: "calc(100vh - 200px)" }}>
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-5     overflow-y-auto overflow-x-hidden pr-2" style={{ maxHeight: "calc(100vh - 200px)" }}>
                     {filteredProducts.map((product) => (
                         <Card
                             key={product.id}
@@ -271,17 +271,17 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
                                         </div>
                                     )}
                                 </div>
-                                <div>
-                                    <h3 className="font-semibold text-sm truncate w-full" title={product.name}>{product.name}</h3>
+                                <div className="w-full px-1">
+                                    <h3 className="font-semibold text-xs sm:text-sm truncate w-full" title={product.name}>{product.name}</h3>
                                     {product.offerPrice != null ? (
-                                        <div className="flex flex-col items-center">
-                                            <p className="text-sm font-bold text-green-600">INR {product.offerPrice.toFixed(3)}</p>
-                                            <p className="text-xs line-through text-gray-400">INR {product.price.toFixed(3)}</p>
+                                        <div className="flex flex-col items-center gap-0.5">
+                                            <p className="text-xs sm:text-sm font-bold text-green-600 wrap-break-word w-full text-center">INR {product.offerPrice.toFixed(3)}</p>
+                                            <p className="text-[10px] sm:text-xs line-through text-gray-400 wrap-break-word w-full text-center">INR {product.price.toFixed(3)}</p>
                                         </div>
                                     ) : (
-                                        <p className="text-sm font-bold text-primary">INR {product.price.toFixed(3)}</p>
+                                        <p className="text-xs sm:text-sm font-bold text-primary wrap-break-word w-full text-center">INR {product.price.toFixed(3)}</p>
                                     )}
-                                    <p className="text-xs text-gray-500"> {product.status !== "out of stock" ? `${product.quantity} in stock` : "out of stock"}</p>
+                                    <p className="text-[10px] sm:text-xs text-gray-500 truncate w-full text-center">{product.status !== "out of stock" ? `${product.quantity} in stock` : "out of stock"}</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -290,7 +290,7 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
             </div>
 
             {/* Cart & Billing */}
-            <div className="md:col-span-1 flex flex-col h-full border-l pl-4 md:mb-10">
+            <div className="md:col-span-1 flex flex-col h-full md:border-l md:pl-4 md:mb-10">
                 <Card className="flex flex-col h-full">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
@@ -312,30 +312,30 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
                                         ? (item.price - item.offerPrice) * item.cartQuantity
                                         : 0;
                                     return (
-                                        <div key={item.id} className="flex justify-between items-start border-b pb-3 gap-2">
-                                            <div className="flex-1 min-w-0">
-                                                <h4 className="font-semibold text-sm truncate" title={item.name}>{item.name}</h4>
-                                                <div className="mt-0.5 flex items-center gap-1.5 flex-wrap">
-                                                    <span className="text-sm font-bold text-foreground">
+                                        <div key={item.id} className="flex flex-col sm:flex-row justify-between items-start border-b pb-3 gap-2">
+                                            <div className="flex-1 min-w-0 w-full">
+                                                <h4 className="font-semibold text-xs sm:text-sm truncate" title={item.name}>{item.name}</h4>
+                                                <div className="mt-0.5 flex items-center gap-1 flex-wrap">
+                                                    <span className="text-xs sm:text-sm font-bold text-foreground">
                                                         INR {lineTotal.toFixed(3)}
                                                     </span>
                                                     {item.offerPrice != null ? (
                                                         <>
-                                                            <span className="text-xs line-through text-muted-foreground">
+                                                            <span className="text-[10px] sm:text-xs line-through text-muted-foreground">
                                                                 INR {(item.price * item.cartQuantity).toFixed(3)}
                                                             </span>
-                                                            <span className="inline-flex items-center gap-0.5 bg-green-100 text-green-700 text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
-                                                                <Tag className="h-2.5 w-2.5" />
+                                                            <span className="inline-flex items-center gap-0.5 bg-green-100 text-green-700 text-[9px] sm:text-[10px] font-semibold px-1 py-0.5 rounded-full whitespace-nowrap">
+                                                                <Tag className="h-2 w-2 sm:h-2.5 sm:w-2.5" />
                                                                 Save INR {lineSaving.toFixed(3)}
                                                             </span>
                                                         </>
                                                     ) : null}
                                                 </div>
-                                                <div className="text-[10px] text-muted-foreground mt-0.5">
+                                                <div className="text-[9px] sm:text-[10px] text-muted-foreground mt-0.5">
                                                     INR {effectivePrice.toFixed(3)} × {item.cartQuantity}
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-1 shrink-0">
+                                            <div className="flex items-center gap-1 shrink-0 self-end sm:self-start">
                                                 <div className="flex items-center border rounded-md overflow-hidden bg-gray-50">
                                                     <Button
                                                         variant="ghost"
@@ -378,16 +378,16 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
                         {/* ── Offer-price savings ── */}
                         {offerDiscountTotal > 0 && (
                             <>
-                                <div className="flex justify-between w-full text-sm text-muted-foreground">
+                                <div className="flex justify-between w-full text-xs sm:text-sm text-muted-foreground">
                                     <span>MRP Total</span>
-                                    <span>INR {mrpTotal.toFixed(3)}</span>
+                                    <span className="tabular-nums">INR {mrpTotal.toFixed(3)}</span>
                                 </div>
-                                <div className="flex justify-between w-full text-sm font-semibold text-green-600">
-                                    <span className="flex items-center gap-1">
-                                        <Tag className="h-3.5 w-3.5" />
+                                <div className="flex justify-between w-full text-xs sm:text-sm font-semibold text-green-600">
+                                    <span className="flex items-center gap-1 shrink-0">
+                                        <Tag className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                                         Offer Savings
                                     </span>
-                                    <span>- INR {offerDiscountTotal.toFixed(3)}</span>
+                                    <span className="tabular-nums">- INR {offerDiscountTotal.toFixed(3)}</span>
                                 </div>
                                 <div className="w-full border-t" />
                             </>
@@ -395,9 +395,9 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
 
                         {/* Subtotal after offer prices */}
                         {(offerDiscountTotal > 0 || billDiscountAmount > 0) && (
-                            <div className="flex justify-between w-full text-sm text-muted-foreground">
+                            <div className="flex justify-between w-full text-xs sm:text-sm text-muted-foreground">
                                 <span>Subtotal</span>
-                                <span>INR {subtotal.toFixed(3)}</span>
+                                <span className="tabular-nums">INR {subtotal.toFixed(3)}</span>
                             </div>
                         )}
 
@@ -435,28 +435,28 @@ export const POSClient: React.FC<POSClientProps> = ({ initialProducts }) => {
                                         </Button>
                                     )}
                                 </div>
-                             
+
                             </div>
                         )}
 
                         {/* ── Bill discount summary row ── */}
                         {billDiscountAmount > 0 && (
                             <>
-                                <div className="flex justify-between w-full text-sm font-semibold text-green-600">
-                                    <span className="flex items-center gap-1">
-                                        <ReceiptText className="h-3.5 w-3.5" />
+                                <div className="flex justify-between w-full text-xs sm:text-sm font-semibold text-green-600">
+                                    <span className="flex items-center gap-1 shrink-0">
+                                        <ReceiptText className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                                         Discount applied:
                                     </span>
-                                    <span>- INR {billDiscountAmount.toFixed(2)}</span>
+                                    <span className="tabular-nums">- INR {billDiscountAmount.toFixed(2)}</span>
                                 </div>
                                 <div className="w-full border-t" />
                             </>
                         )}
 
                         {/* ── Final payable ── */}
-                        <div className="flex justify-between w-full text-lg font-bold">
+                        <div className="flex justify-between w-full text-sm sm:text-lg font-bold">
                             <span>Total Payable</span>
-                            <span>INR {finalTotal.toFixed(2)}</span>
+                            <span className="tabular-nums">INR {finalTotal.toFixed(2)}</span>
                         </div>
                         <Button className="w-full" size="lg" disabled={loading || cart.length === 0} onClick={handleCheckout}>
                             {loading ? "Processing..." : "Print Bill"}
