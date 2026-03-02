@@ -34,7 +34,7 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => 
     const invoiceTime = format(dateObj, "HH:mm:ss");
 
     const hasDiscount = (invoice.discountTotal ?? 0) > 0;
-    const mrpTotal = (invoice.subtotal ?? 0) + (invoice.discountTotal ?? 0);
+    const mrpTotal = (invoice.subtotal ?? 0) - (invoice.discountTotal ?? 0);
 
     return (
         <>
@@ -230,27 +230,25 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ invoice }) => 
                     {hasDiscount && (
                         <div className="receipt-total-row">
                             <span>MRP Total:</span>
-                            <span>INR {mrpTotal.toFixed(3)}</span>
+                            <span>INR {invoice.subtotal.toFixed(2)}</span>
                         </div>
                     )}
                     {hasDiscount && (
                         <div className="receipt-discount-row">
                             <span>Discount:</span>
-                            <span>-INR {(invoice.discountTotal ?? 0).toFixed(3)}</span>
+                            <span>-INR {(invoice.discountTotal ?? 0).toFixed(2)}</span>
                         </div>
                     )}
 
                     <div className="receipt-grand-total">
                         <span>TOTAL:</span>
-                        <span>INR {invoice.totalAmount.toFixed(3)}</span>
+                        <span>INR {invoice.totalAmount.toFixed(2)}</span>
                     </div>
                 </div>
 
                 <div className="receipt-footer">
                     <div className="receipt-divider"></div>
                     <p className="receipt-footer-thanks">THANK YOU!</p>
-                    <p>Please keep this receipt</p>
-                    <p>No refund without receipt</p>
                     <p className="ref-text">Ref: {invoice.purchaseId}</p>
                 </div>
             </div>
