@@ -32,12 +32,11 @@ export async function POST(req: Request) {
                 throw new Error("Invoice already processed");
             }
 
-            // Update invoice status to cancelled
-            invoice.status = "cancelled";
-            await invoice.save();
+            // Delete the pending invoice so it's not saved in the DB
+            await Invoice.findByIdAndDelete(invoiceId);
 
             console.log("[BILLING_CANCEL_SUCCESS]", invoice.invoiceNumber);
-            return NextResponse.json({ success: true, message: "Invoice cancelled" });
+            return NextResponse.json({ success: true, message: "Invoice deleted" });
 
         } catch (error: any) {
             console.error("[BILLING_CANCEL_ERROR]", error);

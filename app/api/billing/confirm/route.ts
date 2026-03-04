@@ -21,13 +21,9 @@ export async function POST(req: Request) {
         }
 
         await connectDB();
-        const sessionMongo = await mongoose.startSession();
-        sessionMongo.startTransaction();
 
         try {
-            const invoice = await Invoice.findById(invoiceId)
-                .populate("products.productId")
-                .session(sessionMongo);
+            const invoice = await Invoice.findById(invoiceId).populate("products.productId");
 
             if (!invoice) {
                 throw new Error("Invoice not found");
@@ -38,7 +34,7 @@ export async function POST(req: Request) {
             }
 
             for (const item of invoice.products) {
-                const product = await Product.findById(item.productId._id).session(sessionMongo);
+                const product = await Product.findById(item.productId._id);
 
                 if (!product) {
                     throw new Error(`Product not found`);
@@ -52,24 +48,17 @@ export async function POST(req: Request) {
                 if (product.quantity === 0) {
                     product.status = "out of stock";
                 }
-                await product.save({ session: sessionMongo });
+                await product.save();
             }
 
             invoice.status = "completed";
-            await invoice.save({ session: sessionMongo });
-
-            await sessionMongo.commitTransaction();
-            sessionMongo.endSession();
+            await invoice.save();
 
             console.log("[BILLING_CONFIRM_SUCCESS]", invoice.invoiceNumber);
             return NextResponse.json({ success: true, invoice });
 
         } catch (error: any) {
-            console.error("[BILLING_CONFIRM_ERROR]", error);    
-            if (sessionMongo) {
-                await sessionMongo.abortTransaction();
-                sessionMongo.endSession();
-            }
+            console.error("[BILLING_CONFIRM_ERROR_DETAILS]", error);
             return new NextResponse(error.message || "Confirmation failed", { status: 400 });
         }
     } catch (error) {
