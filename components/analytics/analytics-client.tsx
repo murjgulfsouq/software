@@ -39,7 +39,7 @@ function StatCard({
                 </div>
             </CardHeader>
             <CardContent>
-                <div className={`text-2xl font-bold tracking-tight ${colorClass}`}>{value}</div>
+                <div className={`text-xl sm:text-2xl font-bold tracking-tight ${colorClass} break-all`}>{value}</div>
                 <p className="text-xs text-muted-foreground mt-1">{sub}</p>
             </CardContent>
         </Card>
@@ -62,7 +62,7 @@ function CustomPieLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent }:
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
     return (
-        <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize={13} fontWeight={600}>
+        <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize={12} fontWeight={600}>
             {`${(percent * 100).toFixed(0)}%`}
         </text>
     );
@@ -92,15 +92,15 @@ export function AnalyticsClient() {
     const formatINR = (n: number) => `INR ${n.toFixed(3)}`;
 
     return (
-        <div className="flex-1 space-y-8 p-8 pt-6">
+        <div className="flex-1 space-y-6 p-4 sm:p-6 md:p-8 pt-4 sm:pt-6">
             {/* Header */}
             <div>
-                <h2 className="text-3xl font-bold tracking-tight">Analytics</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Analytics</h2>
                 <p className="text-sm text-muted-foreground mt-1">Full historical performance overview</p>
             </div>
 
-            {/* Summary Stat Cards */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {/* Summary Stat Cards — 1 col mobile, 2 col tablet, 4 col desktop */}
+            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                 <StatCard
                     label="Lifetime Net Revenue"
                     value={formatINR(data.netRevenue || 0)}
@@ -109,7 +109,7 @@ export function AnalyticsClient() {
                     colorClass="text-green-600"
                 />
                 <StatCard
-                    label="Lifetime Gross Revenue"
+                    label="Gross Revenue"
                     value={formatINR(data.totalRevenue || 0)}
                     sub="Total of all completed invoices"
                     icon={DollarSign}
@@ -135,13 +135,13 @@ export function AnalyticsClient() {
 
             {/* Area Chart — 30-day Revenue vs Expenses */}
             <Card>
-                <CardHeader>
-                    <CardTitle>30-Day Revenue vs Expenses</CardTitle>
-                    <CardDescription>Daily breakdown for the last 30 days</CardDescription>
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-base sm:text-lg">30-Day Revenue vs Expenses</CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">Daily breakdown for the last 30 days</CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <ChartContainer config={areaChartConfig} className="h-[320px] w-full">
-                        <AreaChart data={data.areaData} margin={{ top: 10, right: 20, left: 10, bottom: 0 }}>
+                <CardContent className="px-2 sm:px-6">
+                    <ChartContainer config={areaChartConfig} className="h-[220px] sm:h-[280px] md:h-[320px] w-full">
+                        <AreaChart data={data.areaData} margin={{ top: 10, right: 8, left: -10, bottom: 0 }}>
                             <defs>
                                 <linearGradient id="gradRevenue" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.35} />
@@ -155,16 +155,17 @@ export function AnalyticsClient() {
                             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.4} />
                             <XAxis
                                 dataKey="date"
-                                fontSize={11}
+                                fontSize={10}
                                 tickLine={false}
                                 axisLine={false}
-                                interval={4}
+                                interval={6}
                                 tick={{ fill: "hsl(var(--muted-foreground))" }}
                             />
                             <YAxis
-                                fontSize={11}
+                                fontSize={10}
                                 tickLine={false}
                                 axisLine={false}
+                                width={45}
                                 tickFormatter={(v) => `${v}`}
                                 tick={{ fill: "hsl(var(--muted-foreground))" }}
                             />
@@ -200,17 +201,17 @@ export function AnalyticsClient() {
                 </CardContent>
             </Card>
 
-            {/* Bar Chart + Pie Chart side by side */}
-            <div className="grid gap-6 lg:grid-cols-5">
-                {/* Bar Chart — 6 Month Revenue */}
+            {/* Bar Chart + Pie Chart — stacked on mobile, side-by-side on large */}
+            <div className="grid gap-4 grid-cols-1 lg:grid-cols-5">
+                {/* Bar Chart */}
                 <Card className="lg:col-span-3">
-                    <CardHeader>
-                        <CardTitle>Monthly Revenue</CardTitle>
-                        <CardDescription>Last 6 months breakdown</CardDescription>
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-base sm:text-lg">Monthly Revenue</CardTitle>
+                        <CardDescription className="text-xs sm:text-sm">Last 6 months breakdown</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <ChartContainer config={barChartConfig} className="h-[280px] w-full">
-                            <BarChart data={data.monthlyData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                    <CardContent className="px-2 sm:px-6">
+                        <ChartContainer config={barChartConfig} className="h-[220px] sm:h-[260px] md:h-[280px] w-full">
+                            <BarChart data={data.monthlyData} margin={{ top: 10, right: 8, left: -10, bottom: 0 }}>
                                 <defs>
                                     <linearGradient id="gradBar" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="0%" stopColor="#8b5cf6" stopOpacity={1} />
@@ -220,15 +221,16 @@ export function AnalyticsClient() {
                                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.4} vertical={false} />
                                 <XAxis
                                     dataKey="month"
-                                    fontSize={11}
+                                    fontSize={10}
                                     tickLine={false}
                                     axisLine={false}
                                     tick={{ fill: "hsl(var(--muted-foreground))" }}
                                 />
                                 <YAxis
-                                    fontSize={11}
+                                    fontSize={10}
                                     tickLine={false}
                                     axisLine={false}
+                                    width={45}
                                     tick={{ fill: "hsl(var(--muted-foreground))" }}
                                 />
                                 <ChartTooltip
@@ -250,21 +252,21 @@ export function AnalyticsClient() {
                     </CardContent>
                 </Card>
 
-                {/* Pie / Donut Chart — Revenue vs Expenses */}
+                {/* Pie / Donut Chart */}
                 <Card className="lg:col-span-2">
-                    <CardHeader>
-                        <CardTitle>Revenue vs Expenses</CardTitle>
-                        <CardDescription>Lifetime distribution</CardDescription>
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-base sm:text-lg">Revenue vs Expenses</CardTitle>
+                        <CardDescription className="text-xs sm:text-sm">Lifetime distribution</CardDescription>
                     </CardHeader>
-                    <CardContent className="flex flex-col items-center gap-4">
-                        <ResponsiveContainer width="100%" height={220}>
+                    <CardContent className="flex flex-col items-center gap-4 px-2 sm:px-6">
+                        <ResponsiveContainer width="100%" height={200}>
                             <PieChart>
                                 <Pie
                                     data={data.pieData}
                                     cx="50%"
                                     cy="50%"
-                                    innerRadius={55}
-                                    outerRadius={90}
+                                    innerRadius={50}
+                                    outerRadius={80}
                                     paddingAngle={3}
                                     dataKey="value"
                                     labelLine={false}
@@ -288,13 +290,13 @@ export function AnalyticsClient() {
                         <div className="grid grid-cols-2 gap-3 w-full text-sm">
                             <div className="flex flex-col items-center gap-1 rounded-lg bg-green-50 dark:bg-green-950 p-3">
                                 <span className="text-xs text-muted-foreground">Net Revenue</span>
-                                <span className="font-bold text-green-600 dark:text-green-400">
+                                <span className="font-bold text-green-600 dark:text-green-400 text-xs sm:text-sm break-all text-center">
                                     INR {(data.netRevenue || 0).toFixed(2)}
                                 </span>
                             </div>
                             <div className="flex flex-col items-center gap-1 rounded-lg bg-red-50 dark:bg-red-950 p-3">
                                 <span className="text-xs text-muted-foreground">Expenses</span>
-                                <span className="font-bold text-red-600 dark:text-red-400">
+                                <span className="font-bold text-red-600 dark:text-red-400 text-xs sm:text-sm break-all text-center">
                                     INR {(data.totalExpenses || 0).toFixed(2)}
                                 </span>
                             </div>
@@ -306,26 +308,31 @@ export function AnalyticsClient() {
             {/* Top Sellers */}
             {data.topProducts?.length > 0 && (
                 <Card>
-                    <CardHeader>
+                    <CardHeader className="pb-2">
                         <div className="flex items-center gap-2">
                             <Trophy className="h-5 w-5 text-amber-500" />
-                            <CardTitle>Best-Selling Products</CardTitle>
+                            <CardTitle className="text-base sm:text-lg">Best-Selling Products</CardTitle>
                         </div>
-                        <CardDescription>Top 5 products by units sold (all time)</CardDescription>
+                        <CardDescription className="text-xs sm:text-sm">Top 5 products by units sold (all time)</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                             {(data.topProducts as any[]).map((p: any, i: number) => (
-                                <div key={p._id || i} className="flex items-center gap-4">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 font-bold text-sm shrink-0">
+                                <div key={p._id || i} className="flex items-center gap-3">
+                                    <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 font-bold text-xs sm:text-sm shrink-0">
                                         {i + 1}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between gap-2">
-                                            <span className="text-sm font-medium truncate">{p.name || "Unknown Product"}</span>
-                                            <span className="text-xs text-muted-foreground shrink-0">{p.unitsSold} units</span>
+                                        <div className="flex items-center justify-between gap-2 flex-wrap">
+                                            <span className="text-xs sm:text-sm font-medium truncate max-w-[140px] sm:max-w-none">{p.name || "Unknown Product"}</span>
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                <span className="text-xs text-muted-foreground">{p.unitsSold} units</span>
+                                                <span className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400">
+                                                    INR {(p.revenue || 0).toFixed(2)}
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div className="mt-1 h-1.5 rounded-full bg-muted overflow-hidden">
+                                        <div className="mt-1.5 h-1.5 rounded-full bg-muted overflow-hidden">
                                             <div
                                                 className="h-full rounded-full bg-amber-400 dark:bg-amber-500 transition-all duration-700"
                                                 style={{
@@ -334,9 +341,6 @@ export function AnalyticsClient() {
                                             />
                                         </div>
                                     </div>
-                                    <span className="text-sm font-semibold text-blue-600 dark:text-blue-400 shrink-0">
-                                        INR {(p.revenue || 0).toFixed(2)}
-                                    </span>
                                 </div>
                             ))}
                         </div>

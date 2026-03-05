@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, ShoppingCart, Package, Users, LogOut, Receipt, BarChart2 } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, Package, Users, LogOut, Receipt, BarChart2, Wallet } from "lucide-react";
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
 }
@@ -63,6 +63,13 @@ export function Sidebar({ className }: SidebarProps) {
             href: "/expenses",
             color: "text-red-500",
             roles: ["admin"],
+        },
+        {
+            label: "Expenses",
+            icon: Wallet,
+            href: "/staff/expenses",
+            color: "text-red-500",
+            roles: ["staff"],
         },
         {
             label: "Staff",

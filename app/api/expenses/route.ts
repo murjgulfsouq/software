@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     try {
         const user = await getSessionUser();
 
-        if (!user || user.role !== "admin") {
+        if (!user || (user.role !== "admin" && user.role !== "staff")) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
             description,
             amount,
             date: date || new Date(),
-            createdBy: user.id || "admin",
+            createdBy: user.name,
         });
 
         return NextResponse.json(expense);
@@ -39,7 +39,7 @@ export async function GET(req: Request) {
     try {
         const user = await getSessionUser();
 
-        if (!user || user.role !== "admin") {
+        if (!user || (user.role !== "admin" && user.role !== "staff")) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 

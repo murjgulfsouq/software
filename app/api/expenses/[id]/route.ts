@@ -11,7 +11,7 @@ export async function DELETE(
         const user = await getSessionUser();
         const { id } = await params;
 
-        if (!user || user.role !== "admin") {
+        if (!user || (user.role !== "admin" && user.role !== "staff")) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 

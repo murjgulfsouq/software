@@ -13,7 +13,7 @@ const ExpenseSchema: Schema<IExpense> = new Schema(
     {
         description: { type: String, required: true },
         amount: { type: Number, required: true, min: 0 },
-        date: { type: Date, required: true, default: Date.now },
+        date: { type: Date, required: true, default: Date.now },    
         createdBy: { type: String, required: true },
     },
     { timestamps: true }
